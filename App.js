@@ -8,92 +8,77 @@ export default function App() {
   const [isGameActive, setIsGameActive] = useState(false);
   const [isGamePaused, setIsGamePaused] = useState(false);
   const [gameReset, setGameReset] = useState(false);
-  
 
   const randomizeMole = () => {
     const randomMole = Math.floor(Math.random() * 9); // For a 3x3 grid
     setActiveMole(randomMole);
   };
+
   const handleMoleHit = () => {
     setScore(score + 1);
-    randomizeMole();
   };
+
   useEffect(() => {
     let interval;
-    if (isGameActive) {
+    if (isGameActive && !isGamePaused) {
       interval = setInterval(() => {
         randomizeMole();
       }, 1000); // Change every second
     }
     return () => clearInterval(interval);
-  }, [isGameActive]);
+  }, [isGameActive, isGamePaused, gameReset]);
 
   // Pause the game
-const handlePauseGame = () => {
-  setIsGamePaused(true);
-  setIsGameActive(false); // Temporarily treat the game as inactive
-};
+  const handlePauseGame = () => {
+    setIsGamePaused(true);
+    setIsGameActive(false); // Temporarily treat the game as inactive
+  };
 
-// Resume the game
-const handleResumeGame = () => {
-  setIsGamePaused(false);
-  setIsGameActive(true);
-};
+  // Resume the game
+  const handleResumeGame = () => {
+    setIsGamePaused(false);
+    setIsGameActive(true);
+  };
 
-// Reset the game
-const handleResetGame = () => {
-  setScore(0);
-  setActiveMole(null);
-  setIsGamePaused(false);
-  setIsGameActive(false);
-  setGameReset(prevState => !prevState); // Toggle to trigger useEffect
-};
+  // Reset the game
+  const handleResetGame = () => {
+    setScore(0);
+    setActiveMole(null);
+    setIsGamePaused(false);
+    setIsGameActive(false);
+    setGameReset(prevState => !prevState); // Toggle to trigger useEffect
+  };
 
-    
-  
   return (
     <View style={styles.container}>
-      {/* Start Button */}
-      {!isGameActive && (
-        <Button 
-          title="Start Game" 
-          onPress={() => setIsGameActive(true)} 
-        />
+      {isGameActive && !isGamePaused && (
+        <Button title="Pause Game" onPress={handlePauseGame} />
       )}
 
-      {/* Score Display */}
+      {!isGameActive && !isGamePaused && (
+        <Button title="Start Game" onPress={() => setIsGameActive(true)} />
+      )}
+
       <Text>Score: {score}</Text>
 
-      {/* Game Grid */}
       <View style={styles.grid}>
         {Array.from({ length: 9 }).map((_, index) => (
           <View key={index} style={styles.cell}>
-            <Mole isVisible={isGameActive && activeMole === index} onPress={handleMoleHit} />
+            <Mole isVisible={isGameActive && !isGamePaused && activeMole === index} onPress={handleMoleHit} />
           </View>
         ))}
       </View>
+
+      {isGamePaused && (
+        <View style={styles.pauseScreen}>
+          <Text>Game Paused</Text>
+          <Button title="Resume Game" onPress={handleResumeGame} />
+          <Button title="New Game" onPress={handleResetGame} />
+        </View>
+      )}
     </View>
   );
 }
-return (
-  <View style={styles.container}>
-    {isGameActive && (
-      <Button title="Pause Game" onPress={handlePauseGame} />
-    )}
-    
-    {isGamePaused && (
-      <View style={styles.pauseScreen}>
-        <Text>Game Paused</Text>
-        <Button title="Resume Game" onPress={handleResumeGame} />
-        <Button title="Reset Game" onPress={handleResetGame} />
-      </View>
-    )}
-
-    {/* Your existing game UI */}
-  </View>
-);
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -102,30 +87,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
   },
-  row: {
+  grid: {
+    width: '80%',
+    height: '60%',
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  cell: {
-    width: 100,
-    height: 100,
+    flexWrap: 'wrap',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#000',
-  },
-  grid: {
-    width: 300, // Set the width of the grid
-    height: 300, // Set the height of the grid
-    flexDirection: 'row', // Align children in a row
-    flexWrap: 'wrap', // Allow wrapping of children
-    justifyContent: 'center', // Center children horizontally
-    alignItems: 'center', // Center children vertically
   },
   cell: {
-    width: '33%', // Each cell is a third of the grid width
-    height: '33%', // Each cell is a third of the grid height
+    width: '33%',
+    height: '33%',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
@@ -137,7 +109,6 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
-  
 });
