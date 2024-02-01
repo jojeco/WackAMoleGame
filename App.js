@@ -1,6 +1,11 @@
-import Mole from './app/Mole';
+import Mole from './components/Mole';
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
+import theStyles from './styles/page-styles';
+//import score from './components/score';
+
+
+
 
 export default function App() {
   const [activeMole, setActiveMole] = useState(null); // State for active mole
@@ -8,12 +13,33 @@ export default function App() {
   const [isGameActive, setIsGameActive] = useState(false);
   const [isGamePaused, setIsGamePaused] = useState(false);
   const [gameReset, setGameReset] = useState(false);
+  const [isGameOver, setIsGameOver] = useState(false);
+  const [lives, setLives] = useState(3); // Starting with 3 lives
 
+
+  const handleIncorrectTap = () => {
+    if (lives > 1) {
+      setLives(lives - 1);
+    } else {
+      setLives(0);
+      setIsGameActive(false); // Stop the game
+      setIsGameOver(true); // Set the game over state
+    }
+  };
+  
   const randomizeMole = () => {
     const randomMole = Math.floor(Math.random() * 9); // For a 3x3 grid
     setActiveMole(randomMole);
   };
 
+  const handleIncorrectTap = () => {
+    if (lives > 0) {
+      setLives(lives - 1);
+    } else {
+      // Handle game over scenario
+    }
+  };
+  
   const handleMoleHit = () => {
     setScore(score + 1);
   };
@@ -23,7 +49,7 @@ export default function App() {
     if (isGameActive && !isGamePaused) {
       interval = setInterval(() => {
         randomizeMole();
-      }, 1000); // Change every second
+      }, 1500); // Change every second
     }
     return () => clearInterval(interval);
   }, [isGameActive, isGamePaused, gameReset]);
@@ -50,7 +76,7 @@ export default function App() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style = {theStyles.container}>
       {isGameActive && !isGamePaused && (
         <Button title="Pause Game" onPress={handlePauseGame} />
       )}
@@ -60,17 +86,25 @@ export default function App() {
       )}
 
       <Text>Score: {score}</Text>
+      <Text>Lives: {lives}</Text>
 
-      <View style={styles.grid}>
-        {Array.from({ length: 9 }).map((_, index) => (
-          <View key={index} style={styles.cell}>
-            <Mole isVisible={isGameActive && !isGamePaused && activeMole === index} onPress={handleMoleHit} />
-          </View>
-        ))}
-      </View>
+    <View style={styles.grid} onTouchStart={handleIncorrectTap}>
+    {Array.from({ length: 9 }).map((_, index) => (
+    <View key={index} style={styles.cell}>
+      <Mole 
+        isVisible={isGameActive && !isGamePaused && activeMole === index} 
+        onPress={handleMoleHit} 
+        onMoleMissed={handleIncorrectTap}
+      />
+    </View>
+  ))}
+</View>
+
+      
+      
 
       {isGamePaused && (
-        <View style={styles.pauseScreen}>
+        <View style ={theStyles.pauseScreen}>
           <Text>Game Paused</Text>
           <Button title="Resume Game" onPress={handleResumeGame} />
           <Button title="New Game" onPress={handleResetGame} />
@@ -79,36 +113,3 @@ export default function App() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  grid: {
-    width: '80%',
-    height: '60%',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cell: {
-    width: '33%',
-    height: '33%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#000',
-  },
-  pauseScreen: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-});
