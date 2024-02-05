@@ -3,14 +3,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Button } from 'react-native';
 
 export default function App() {
-  const [activeMole, setActiveMole] = useState(null); // State for active mole
-  const [score, setScore] = useState(0); // State for score
+  const [activeMole, setActiveMole] = useState(null); 
+  const [score, setScore] = useState(0); 
   const [isGameActive, setIsGameActive] = useState(false);
   const [isGamePaused, setIsGamePaused] = useState(false);
   const [gameReset, setGameReset] = useState(false);
 
   const randomizeMole = () => {
-    const randomMole = Math.floor(Math.random() * 9); // For a 3x3 grid
+    const randomMole = Math.floor(Math.random() * 9); 
     setActiveMole(randomMole);
   };
 
@@ -23,7 +23,7 @@ export default function App() {
     if (isGameActive && !isGamePaused) {
       interval = setInterval(() => {
         randomizeMole();
-      }, 1000); // Change every second
+      }, 1000); 
     }
     return () => clearInterval(interval);
   }, [isGameActive, isGamePaused, gameReset]);
@@ -31,7 +31,7 @@ export default function App() {
   // Pause the game
   const handlePauseGame = () => {
     setIsGamePaused(true);
-    setIsGameActive(false); // Temporarily treat the game as inactive
+    setIsGameActive(false); 
   };
 
   // Resume the game
