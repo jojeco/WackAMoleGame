@@ -1,33 +1,51 @@
-import Mole from './app/Mole';
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import { View, Text, Button, TouchableOpacity } from 'react-native';
+import Mole from './Components/Mole'; 
+import styles from './styles/page-styles';
 
 export default function App() {
-  const [activeMole, setActiveMole] = useState(null); 
-  const [score, setScore] = useState(0); 
+  const [activeMole, setActiveMole] = useState(null); // State for the active mole
+  const [score, setScore] = useState(0); // State for the score
   const [isGameActive, setIsGameActive] = useState(false);
   const [isGamePaused, setIsGamePaused] = useState(false);
   const [gameReset, setGameReset] = useState(false);
+  const initialLives = 3; // Starting number of lives
+  const [lives, setLives] = useState(initialLives);
+  const [moleHit, setMoleHit] = useState(false); // Track if the mole was hit
+
 
   const randomizeMole = () => {
-    const randomMole = Math.floor(Math.random() * 9); 
+    const randomMole = Math.floor(Math.random() * 9);
     setActiveMole(randomMole);
+    setMoleHit(false); // Reset mole hit state
   };
+  
 
   const handleMoleHit = () => {
     setScore(score + 1);
+    setMoleHit(true); // Indicate the mole was hit
+    randomizeMole();  
   };
-
+  
   useEffect(() => {
-    let interval;
     if (isGameActive && !isGamePaused) {
-      interval = setInterval(() => {
+      const moleTimer = setTimeout(() => {
+        if (!moleHit) {
+          setLives((prevLives) => prevLives - 1);
+        }
+        // Optionally, end game if lives reach 0
+        if (lives <= 1) {
+          alert('Game Over');
+          setIsGameActive(false);
+          setLives(initialLives);
+        }
         randomizeMole();
-      }, 1000); 
+      }, 2000); 
+  
+      return () => clearTimeout(moleTimer);
     }
-    return () => clearInterval(interval);
-  }, [isGameActive, isGamePaused, gameReset]);
-
+  }, [activeMole, isGameActive, isGamePaused, moleHit, lives]);
+  
   // Pause the game
   const handlePauseGame = () => {
     setIsGamePaused(true);
@@ -47,7 +65,9 @@ export default function App() {
     setIsGamePaused(false);
     setIsGameActive(false);
     setGameReset(prevState => !prevState); // Toggle to trigger useEffect
+    setLives(initialLives); // Reset lives on game reset
   };
+  
 
   return (
     <View style={styles.container}>
@@ -60,6 +80,7 @@ export default function App() {
       )}
 
       <Text>Score: {score}</Text>
+      <Text>Lives: {lives}</Text>
 
       <View style={styles.grid}>
         {Array.from({ length: 9 }).map((_, index) => (
@@ -68,7 +89,6 @@ export default function App() {
           </View>
         ))}
       </View>
-
       {isGamePaused && (
         <View style={styles.pauseScreen}>
           <Text>Game Paused</Text>
@@ -79,36 +99,3 @@ export default function App() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  grid: {
-    width: '80%',
-    height: '60%',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  cell: {
-    width: '33%',
-    height: '33%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#000',
-  },
-  pauseScreen: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-});
