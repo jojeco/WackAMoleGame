@@ -40,7 +40,7 @@ export default function App() {
           setLives(initialLives);
         }
         randomizeMole();
-      }, 1000); 
+      }, 3000); 
   
       return () => clearTimeout(moleTimer);
     }
