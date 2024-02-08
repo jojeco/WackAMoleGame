@@ -8,8 +8,8 @@ const MoleStyles = StyleSheet.create({
         alignItems: 'center',
     },
     mole: {
-        width: '80%',   // Adjust size as needed
-        height: '80%',  // Adjust size as needed
+        width: '100%',   // Adjust size as needed
+        height: '100%',  // Adjust size as needed
         justifyContent: 'center',
         alignItems: 'center',
     },

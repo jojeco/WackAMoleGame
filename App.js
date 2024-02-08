@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, Button, TouchableOpacity } from 'react-native';
 import Mole from './Components/Mole'; 
 import styles from './styles/page-styles';
+import pauseSS from './styles/pauseStyle';
 
 export default function App() {
   const [activeMole, setActiveMole] = useState(null); // State for the active mole
@@ -9,7 +10,7 @@ export default function App() {
   const [isGameActive, setIsGameActive] = useState(false);
   const [isGamePaused, setIsGamePaused] = useState(false);
   const [gameReset, setGameReset] = useState(false);
-  const initialLives = 3; // Starting number of lives
+  const initialLives = 5; // Starting number of lives
   const [lives, setLives] = useState(initialLives);
   const [moleHit, setMoleHit] = useState(false); // Track if the mole was hit
 
@@ -19,7 +20,6 @@ export default function App() {
     setActiveMole(randomMole);
     setMoleHit(false); // Reset mole hit state
   };
-  
 
   const handleMoleHit = () => {
     setScore(score + 1);
@@ -38,6 +38,7 @@ export default function App() {
           alert('Game Over');
           setIsGameActive(false);
           setLives(initialLives);
+          setScore(0);
         }
         randomizeMole();
       }, 1000); 
@@ -70,30 +71,39 @@ export default function App() {
   
 
   return (
+    
     <View style={styles.container}>
-      {isGameActive && !isGamePaused && (
-        <Button title="Pause Game" onPress={handlePauseGame} />
-      )}
-
-      {!isGameActive && !isGamePaused && (
-        <Button title="Start Game" onPress={() => setIsGameActive(true)} />
-      )}
-
-      <Text>Score: {score}</Text>
-      <Text>Lives: {lives}</Text>
-
+      <View style={styles.centerTop}>
+        <Text style={styles.textStyle} >{score}</Text>
+      </View>
+      <Text style={styles.topRightText}>Lives:{lives}</Text>
+     
       <View style={styles.grid}>
-        {Array.from({ length: 9 }).map((_, index) => (
-          <View key={index} style={styles.cell}>
+        {Array.from({ length: 3*3}).map((_, index) => (
+          <View key={index} style={styles.cell3x3}>
             <Mole isVisible={isGameActive && !isGamePaused && activeMole === index} onPress={handleMoleHit} />
           </View>
         ))}
       </View>
+      <View style={styles.buttonContainer}>
+          {isGameActive && !isGamePaused && (
+            <Button style={styles.buttonStyle} title="Pause Game" onPress={handlePauseGame} />
+          )}
+
+          {!isGameActive && !isGamePaused && (
+            <Button title="Start Game" onPress={() => setIsGameActive(true)} />
+          )}
+      </View>
       {isGamePaused && (
-        <View style={styles.pauseScreen}>
-          <Text>Game Paused</Text>
-          <Button title="Resume Game" onPress={handleResumeGame} />
-          <Button title="New Game" onPress={handleResetGame} />
+        <View style={pauseSS.pauseScreen}>
+          <View style={pauseSS.pauseContainer}>
+            <Text  style = {pauseSS.pauseText} >Game Paused</Text>
+            <Button title="Resume" onPress={handleResumeGame} />
+            <Button title="New Game" onPress={handleResetGame} />
+            <TouchableOpacity style={styles.button} onPress={handlePress}>
+              <Text style={styles.buttonText}>Press Me</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     </View>
