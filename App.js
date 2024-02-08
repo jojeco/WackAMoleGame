@@ -33,7 +33,7 @@ export default function App() {
         if (!moleHit) {
           setLives((prevLives) => prevLives - 1);
         }
-        // Optionally, end game if lives reach 0
+        
         if (lives <= 1) {
           alert('Game Over');
           setIsGameActive(false);
@@ -100,12 +100,13 @@ export default function App() {
             <Text  style = {pauseSS.pauseText} >Game Paused</Text>
             <Button title="Resume" onPress={handleResumeGame} />
             <Button title="New Game" onPress={handleResetGame} />
-            <TouchableOpacity style={styles.button} onPress={handlePress}>
-              <Text style={styles.buttonText}>Press Me</Text>
-            </TouchableOpacity>
           </View>
         </View>
       )}
     </View>
   );
 }
+
+/*<TouchableOpacity style={styles.button} onPress={handlePress}>
+              <Text style={styles.buttonText}>Press Me</Text>
+            </TouchableOpacity>*/

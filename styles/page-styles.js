@@ -1,8 +1,8 @@
 import { StyleSheet, ImageBackground } from "react-native";
-import moleImage from '../assets/images/mole.png';
+
 
 const styles = StyleSheet.create({
-  bigContaiiner: {
+  bigContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -13,8 +13,6 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       backgroundColor: 'lightgrey',
-      ImageBackground: moleImage,
-      
     },
     row: {
       flexDirection: 'row',
