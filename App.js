@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, TouchableOpacity } from 'react-native';
+import { View, Text, Button, TouchableOpacity, ImageBackground} from 'react-native';
 import Mole from './Components/Mole'; 
 import styles from './styles/page-styles';
 import pauseSS from './styles/pauseStyle';
+//import moleImage from './assets/images/mole';
 
 export default function App() {
   const [activeMole, setActiveMole] = useState(null); // State for the active mole
@@ -14,7 +15,16 @@ export default function App() {
   const [lives, setLives] = useState(initialLives);
   const [moleHit, setMoleHit] = useState(false); // Track if the mole was hit
 
-
+ /* const backgroundApp = () => (
+    <View style={styles.container}>
+      <ImageBackground
+        source={require('../assets/images/mole')} // For local images
+        style={styles.backgroundImage}
+      >
+      </ImageBackground>
+    </View>
+  );
+*/
   const randomizeMole = () => {
     const randomMole = Math.floor(Math.random() * 9);
     setActiveMole(randomMole);
@@ -23,12 +33,13 @@ export default function App() {
 
   const handleMoleHit = () => {
     setScore(score + 1);
-    setMoleHit(true); // Indicate the mole was hit
+     // Indicate the mole was hit
     randomizeMole();  
   };
   
   useEffect(() => {
     if (isGameActive && !isGamePaused) {
+      setMoleHit (true);
       const moleTimer = setTimeout(() => {
         if (!moleHit) {
           setLives((prevLives) => prevLives - 1);
@@ -41,7 +52,7 @@ export default function App() {
           setScore(0);
         }
         randomizeMole();
-      }, 1000); 
+      }, 2000); 
   
       return () => clearTimeout(moleTimer);
     }
@@ -69,9 +80,7 @@ export default function App() {
     setLives(initialLives); // Reset lives on game reset
   };
   
-
   return (
-    
     <View style={styles.container}>
       <View style={styles.centerTop}>
         <Text style={styles.textStyle} >{score}</Text>
@@ -110,3 +119,4 @@ export default function App() {
 /*<TouchableOpacity style={styles.button} onPress={handlePress}>
               <Text style={styles.buttonText}>Press Me</Text>
             </TouchableOpacity>*/
+           

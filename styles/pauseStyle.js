@@ -19,7 +19,7 @@ const pauseSS = StyleSheet.create({
     pauseContainer: {
       height: '40%',
       width: '70%',
-      backgroundColor: 'rgba(173, 216, 230, 0.7)',
+      backgroundColor: 'rgba(173, 216, 230, 0.8)',
       alignContent: 'center',
       
     },

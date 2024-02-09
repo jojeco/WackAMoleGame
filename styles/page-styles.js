@@ -46,7 +46,11 @@ const styles = StyleSheet.create({
       backgroundColor: 'lightblue',
       margin:2,
     },
-    
+    backgroundImage: {
+      flex: 1,
+      justifyContent: 'center', // Align items vertically
+      alignItems: 'center', // Align items horizontally
+    },
     topLeftText: {
       position: 'absolute',
       top: 40,
@@ -60,7 +64,7 @@ const styles = StyleSheet.create({
     },
     centerTop: {
       position: 'absolute',
-      flew: 1,
+      flex: 1,
       top: 80,
       fontSize: 40,
     },
