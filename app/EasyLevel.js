@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, TouchableOpacity } from 'react-native';
-import Mole from './Components/Mole'; 
-import styles from './styles/page-styles';
+import { View, Text, Button, TouchableOpacity, ImageBackground} from 'react-native';
+import Mole from '../Components/Mole'; 
+import styles from '../styles/page-styles';
+import pauseSS from '../styles/pauseStyle';
+import { Link } from 'expo-router';
+
+//import moleImage from './assets/images/mole';
 
 export default function App() {
   const [activeMole, setActiveMole] = useState(null); // State for the active mole
@@ -9,38 +13,49 @@ export default function App() {
   const [isGameActive, setIsGameActive] = useState(false);
   const [isGamePaused, setIsGamePaused] = useState(false);
   const [gameReset, setGameReset] = useState(false);
-  const initialLives = 3; // Starting number of lives
+  const initialLives = 5; // Starting number of lives
   const [lives, setLives] = useState(initialLives);
   const [moleHit, setMoleHit] = useState(false); // Track if the mole was hit
 
 
+ /* const backgroundApp = () => (
+    <View style={styles.container}>
+      <ImageBackground
+        source={require('../assets/images/mole')} // For local images
+        style={styles.backgroundImage}
+      >
+      </ImageBackground>
+    </View>
+  );
+*/
   const randomizeMole = () => {
     const randomMole = Math.floor(Math.random() * 9);
     setActiveMole(randomMole);
     setMoleHit(false); // Reset mole hit state
   };
-  
 
   const handleMoleHit = () => {
     setScore(score + 1);
-    setMoleHit(true); // Indicate the mole was hit
+     // Indicate the mole was hit
     randomizeMole();  
   };
   
   useEffect(() => {
     if (isGameActive && !isGamePaused) {
+      setMoleHit (true);
       const moleTimer = setTimeout(() => {
         if (!moleHit) {
           setLives((prevLives) => prevLives - 1);
         }
-        // Optionally, end game if lives reach 0
+        
         if (lives <= 1) {
           alert('Game Over');
           setIsGameActive(false);
           setLives(initialLives);
+          setScore(0);
         }
         randomizeMole();
-      }, 3000); 
+      }, 2000); 
   
       return () => clearTimeout(moleTimer);
     }
@@ -68,34 +83,48 @@ export default function App() {
     setLives(initialLives); // Reset lives on game reset
   };
   
-
   return (
+    
     <View style={styles.container}>
-      {isGameActive && !isGamePaused && (
-        <Button title="Pause Game" onPress={handlePauseGame} />
-      )}
-
-      {!isGameActive && !isGamePaused && (
-        <Button title="Start Game" onPress={() => setIsGameActive(true)} />
-      )}
-
-      <Text>Score: {score}</Text>
-      <Text>Lives: {lives}</Text>
-
+      <View style={styles.page}>
+        <Text>Level 1</Text>
+        <Link href="/">Home</Link>
+      </View>
+      <View style={styles.centerTop}>
+        <Text style={styles.textStyle} >{score}</Text>
+      </View>
+      <Text style={styles.topRightText}>Lives:{lives}</Text>
+     
       <View style={styles.grid}>
-        {Array.from({ length: 9 }).map((_, index) => (
-          <View key={index} style={styles.cell}>
+        {Array.from({ length: 3*3}).map((_, index) => (
+          <View key={index} style={styles.cell3x3}>
             <Mole isVisible={isGameActive && !isGamePaused && activeMole === index} onPress={handleMoleHit} />
           </View>
         ))}
       </View>
+      <View style={styles.buttonContainer}>
+          {isGameActive && !isGamePaused && (
+            <Button style={styles.buttonStyle} title="Pause Game" onPress={handlePauseGame} />
+          )}
+
+          {!isGameActive && !isGamePaused && (
+            <Button title="Start Game" onPress={() => setIsGameActive(true)} />
+          )}
+      </View>
       {isGamePaused && (
-        <View style={styles.pauseScreen}>
-          <Text>Game Paused</Text>
-          <Button title="Resume Game" onPress={handleResumeGame} />
-          <Button title="New Game" onPress={handleResetGame} />
+        <View style={pauseSS.pauseScreen}>
+          <View style={pauseSS.pauseContainer}>
+            <Text  style = {pauseSS.pauseText} >Game Paused</Text>
+            <Button title="Resume" onPress={handleResumeGame} />
+            <Button title="New Game" onPress={handleResetGame} />
+          </View>
         </View>
       )}
     </View>
   );
 }
+
+/*<TouchableOpacity style={styles.button} onPress={handlePress}>
+              <Text style={styles.buttonText}>Press Me</Text>
+            </TouchableOpacity>*/
+           

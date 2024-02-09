@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Button, TouchableOpacity } from 'react-native';
-import Mole from './Components/Mole'; 
-import styles from './styles/page-styles';
+import Mole from '../Components/Mole'; 
+import styles from '../styles/page-styles';
 
 export default function App() {
   const [activeMole, setActiveMole] = useState(null); // State for the active mole
@@ -40,7 +40,7 @@ export default function App() {
           setLives(initialLives);
         }
         randomizeMole();
-      }, 200); 
+      }, 3000); 
   
       return () => clearTimeout(moleTimer);
     }

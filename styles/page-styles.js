@@ -8,12 +8,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'lightgrey',
   },
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'lightgrey',
-    },
+  button: {
+    backgroundColor: 'lightgreen',
+    borderRadius: 30,
+    padding: 20,
+    marginLeft: 15,
+    marginRight: 15,
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'lightgrey',
+  },
     row: {
       flexDirection: 'row',
       justifyContent: 'space-around',
