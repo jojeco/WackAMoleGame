@@ -1,0 +1,53 @@
+const handleMoleHit = (index) => {
+  setScore((prevScore) => prevScore + 1);
+  setActiveMoles((currentMoles) =>
+    currentMoles.filter((moleIndex) => moleIndex !== index)
+  );
+};
+
+useEffect(() => {
+  let moleTimers = [];
+  if (isGameActive && !isGamePaused) {
+    activeMoles.forEach((mole) => {
+      let timer = setTimeout(() => {
+        setLives((prevLives) => (prevLives > 0 ? prevLives - 1 : 0));
+        setActiveMoles((currentMoles) =>
+          currentMoles.filter((moleIndex) => moleIndex !== mole)
+        );
+      }, 2000); // Adjust timer as needed
+      moleTimers.push(timer);
+    });
+  }
+
+  return () => moleTimers.forEach((timer) => clearTimeout(timer));
+}, [activeMoles, isGameActive, isGamePaused]);
+
+useEffect(() => {
+  if (lives <= 0 && isGameActive) {
+    alert("Game Over!");
+    setIsGameActive(false);
+    resetGame();
+  }
+}, [lives, isGameActive]);
+
+<View style={styles.grid}>
+  {Array.from({ length: moleCount }).map((_, index) => (
+    <View key={index} style={styles.cell3x3}>
+      <Mole
+        isVisible={isGameActive && !isGamePaused && activeMoles.includes(index)}
+        onPress={() => handleMoleHit(index)}
+      />
+    </View>
+  ))}
+</View>;
+
+const randomizeMole = () => {
+  let newMoles = [];
+  while (newMoles.length < maxActiveMoles) {
+    let newMole = Math.floor(Math.random() * moleCount);
+    if (!newMoles.includes(newMole)) {
+      newMoles.push(newMole);
+    }
+  }
+  setActiveMoles(newMoles);
+};
