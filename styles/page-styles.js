@@ -26,6 +26,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  highScore: {
+    position: "absolute",
+    top: 70,
+    right: 20,
+  },
   cell3x3: {
     width: 125,
     height: 125,
@@ -47,6 +52,18 @@ const styles = StyleSheet.create({
     borderColor: "#000",
     backgroundColor: "lightblue",
     margin: 2,
+    borderRadius: 100,
+  },
+  cell5x5: {
+    width: 60,
+    height: 60,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 0.75,
+    borderColor: "#000",
+    backgroundColor: "lightblue",
+    margin: 1,
+    borderRadius: 100,
   },
   backgroundImage: {
     flex: 1,

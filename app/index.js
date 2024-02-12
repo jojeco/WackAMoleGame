@@ -8,6 +8,13 @@ export default function Page() {
     { name: "Level 1", pathname: "/level_1" },
     { name: "Level 2", pathname: "/level_2" },
     { name: "Level 3", pathname: "/level_3" },
+    { name: "Level 4", pathname: "/level_4" },
+    { name: "Level 5", pathname: "/level_5" },
+    { name: "Level 6", pathname: "/level_6" },
+    { name: "Level 7", pathname: "/level_7" },
+    { name: "Level 8", pathname: "/level_8" },
+    { name: "Level 9", pathname: "/level_9" },
+    { name: "Level 10", pathname: "/level_10" },
     // Add more links as needed to make up to 10 links for a 2x5 grid
   ];
 
@@ -39,7 +46,6 @@ export default function Page() {
           </View>
         ))}
       </View>
-      <View></View>
     </View>
   );
 }
