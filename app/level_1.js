@@ -134,7 +134,7 @@ export default function App() {
   }, [lives]);
 
   useEffect(() => {
-    if (score >= 1000) {
+    if (score >= 10) {
       setIsGameWon(true);
       setIsGameActive(false);
     }
