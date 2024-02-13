@@ -13,7 +13,7 @@ export default function App() {
   const [isGameActive, setIsGameActive] = useState(false);
   const [isGamePaused, setIsGamePaused] = useState(false);
   const [gameReset, setGameReset] = useState(false);
-  const initialLives = 100; // Starting number of lives
+  const initialLives = 5; // Starting number of lives
   const [lives, setLives] = useState(initialLives);
   const [moleHit, setMoleHit] = useState(false); // Track if the mole was hit
   const [isGameWon, setIsGameWon] = useState(false);
