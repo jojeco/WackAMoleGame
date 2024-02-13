@@ -152,7 +152,7 @@ export default function App() {
       </View>
       <Text style={styles.topRightText}> Level 1</Text>
       <View style={styles.scoreContainer}>
-        <Text style={styles.scoreStyle}>{score}/1000</Text>
+        <Text style={styles.scoreStyle}>{score}/10</Text>
       </View>
       <Text style={styles.livesContainer}>Lives:{lives}</Text>
 
