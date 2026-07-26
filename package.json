@@ -26,7 +26,8 @@
   },
   "private": true,
   "overrides": {
-    "brace-expansion": "1.1.16",
+    "brace-expansion": "5.0.8",
+    "turbo-stream": "3.2.0",
     "@remix-run/node": "2.17.5",
     "@remix-run/router": "1.23.3",
     "@remix-run/server-runtime": "2.17.5",
