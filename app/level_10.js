@@ -74,6 +74,9 @@ export default function App() {
     setGameReset((prevState) => !prevState); // Toggle to trigger useEffect
     setLives(initialLives); // Reset lives on game reset
     setIsVisible(true);
+    setIsGameLost(false);
+    setIsGameWon(false);
+    setMoleHit(false);
   };
   useEffect(() => {
     if (lives <= 0) {
@@ -146,9 +149,9 @@ export default function App() {
         <View style={pauseSS.pauseScreen}>
           <View style={pauseSS.pauseContainer}>
             <Text style={pauseSS.pausedGameText}>You Won!</Text>
-            <Link href="/level_2" style={pauseSS.pauseButtons}>
-              <Text style={pauseSS.pauseText}>Next Level</Text>
-            </Link>
+            <Pressable style={pauseSS.pauseButtons} onPress={handleResetGame}>
+              <Text style={pauseSS.pauseText}>Play Again</Text>
+            </Pressable>
             <Link href="/" style={pauseSS.pauseButtons}>
               <Text style={pauseSS.pauseText}>Home</Text>
             </Link>

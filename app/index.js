@@ -1,4 +1,4 @@
-import { React } from "react";
+import React from "react";
 import { View, Text, Pressable } from "react-native";
 import { Link } from "expo-router";
 import indexStyles from "../styles/index-styles";
@@ -16,13 +16,6 @@ export default function Page() {
     { name: "Level 9", pathname: "/level_9" },
     { name: "Level 10", pathname: "/level_10" },
   ];
-
-  while (links.length < 10) {
-    links.push({
-      name: `Level ${links.length + 1}`,
-      pathname: `/level_${links.length + 1}`,
-    });
-  }
 
   return (
     <View style={indexStyles.screenLayout}>

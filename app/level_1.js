@@ -91,6 +91,8 @@ export default function App() {
         }
 
         if (lives <= 1) {
+          updateHighScore(score);
+          setHighScore((h) => Math.max(h, score));
           setIsGameLost(true);
           setIsGameActive(false);
           setLives(initialLives);
@@ -124,10 +126,15 @@ export default function App() {
     setGameReset((prevState) => !prevState); // Toggle to trigger useEffect
     setLives(initialLives); // Reset lives on game reset
     setIsVisible(true);
+    setIsGameLost(false);
+    setIsGameWon(false);
+    setMoleHit(false);
   };
 
   useEffect(() => {
     if (lives <= 0) {
+      updateHighScore(score);
+      setHighScore((h) => Math.max(h, score));
       setIsGameLost(true);
       setIsGameActive(false);
     }
@@ -135,6 +142,8 @@ export default function App() {
 
   useEffect(() => {
     if (score >= 10) {
+      updateHighScore(score);
+      setHighScore((h) => Math.max(h, score));
       setIsGameWon(true);
       setIsGameActive(false);
     }
@@ -213,9 +222,9 @@ export default function App() {
         <View style={pauseSS.pauseScreen}>
           <View style={pauseSS.pauseContainer}>
             <Text style={pauseSS.pausedGameText}>You lost level 1{'\n'} you suck</Text>
-            <Link href="/level_2" style={pauseSS.pauseButtons}>
-              <Text style={pauseSS.pauseText}>Next Level</Text>
-            </Link>
+            <Pressable style={pauseSS.pauseButtons} onPress={handleResetGame}>
+              <Text style={pauseSS.pauseText}>Retry</Text>
+            </Pressable>
             <Link href="/" style={pauseSS.pauseButtons}>
               <Text style={pauseSS.pauseText}>Home</Text>
             </Link>
