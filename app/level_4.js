@@ -5,6 +5,7 @@ import styles from "../styles/page-styles";
 import pauseSS from "../styles/pauseStyle";
 import { Link } from "expo-router";
 import pauseImage from "../assets/images/buttonPause.png";
+import { useLevelProgress } from "../hooks/useLevelProgress";
 
 export default function App() {
   const [activeMole, setActiveMole] = useState(null); // State for the active mole
@@ -18,6 +19,7 @@ export default function App() {
   const [isGameWon, setIsGameWon] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [isGameLost, setIsGameLost] = useState(false);
+  const { best, recordWin, recordLoss } = useLevelProgress(4);
 
   const randomizeMole = () => {
     const randomMole = Math.floor(Math.random() * 16);
@@ -44,6 +46,7 @@ export default function App() {
           setIsGameLost(true);
           setIsGameActive(false);
           setLives(initialLives);
+          recordLoss(score);
           setScore(0);
         }
         randomizeMole();
@@ -74,16 +77,21 @@ export default function App() {
     setGameReset((prevState) => !prevState); // Toggle to trigger useEffect
     setLives(initialLives); // Reset lives on game reset
     setIsVisible(true);
+    setIsGameLost(false);
+    setIsGameWon(false);
+    setMoleHit(false);
   };
   useEffect(() => {
     if (lives <= 0) {
       setIsGameLost(true);
       setIsGameActive(false);
+      recordLoss(score);
     }
   }, [lives]);
 
   useEffect(() => {
     if (score >= 20) {
+      recordWin(score, lives);
       setIsGameWon(true);
       setIsGameActive(false);
     }
@@ -91,6 +99,9 @@ export default function App() {
 
   return (
     <View style={styles.container}>
+      <View style={styles.highScore}>
+        <Text>Best: {'\n'}{best}</Text>
+      </View>
       <View style={pauseSS.pauseButton}>
         <TouchableOpacity onPress={handlePauseGame}>
           <Image source={pauseImage} style={styles.pauseButton} />
@@ -146,7 +157,7 @@ export default function App() {
         <View style={pauseSS.pauseScreen}>
           <View style={pauseSS.pauseContainer}>
             <Text style={pauseSS.pausedGameText}>You Won!</Text>
-            <Link href="/level_2" style={pauseSS.pauseButtons}>
+            <Link href="/level_5" style={pauseSS.pauseButtons}>
               <Text style={pauseSS.pauseText}>Next Level</Text>
             </Link>
             <Link href="/" style={pauseSS.pauseButtons}>

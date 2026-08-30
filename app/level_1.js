@@ -5,7 +5,7 @@ import styles from "../styles/page-styles";
 import pauseSS from "../styles/pauseStyle";
 import { Link } from "expo-router";
 import pauseImage from "../assets/images/buttonPause.png";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useLevelProgress } from "../hooks/useLevelProgress";
 
 export default function App() {
   const [activeMole, setActiveMole] = useState(null); // State for the active mole
@@ -19,50 +19,7 @@ export default function App() {
   const [isGameWon, setIsGameWon] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [isGameLost, setIsGameLost] = useState(false);
-  const [highScore, setHighScore] = useState(0);
-
-    useEffect(() => {
-    const fetchHighScore = async () => {
-      const storedHighScore = await AsyncStorage.getItem('highScore');
-      if (storedHighScore) {
-        setHighScore(parseInt(storedHighScore, 10));
-      }
-    };
-
-    fetchHighScore();
-  }, []);
-
-  const getHighScore = async () => {
-    try {
-      const value = await AsyncStorage.getItem('highScore');
-      if(value !== null) {
-        // Value stored in 'highScore', parse it as it's stored as string
-        return parseInt(value, 10);
-      }
-    } catch(e) {
-      // Error retrieving data
-      console.log(e);
-    }
-    return 0; // Default high score is 0 if not found
-  };
-  
-  const saveHighScore = async (score) => {
-    try {
-      await AsyncStorage.setItem('highScore', score.toString());
-    } catch (e) {
-      // Saving error
-      console.log(e);
-    }
-  };
-  
-  // After game ends or when the score is updated
-  const updateHighScore = async (newScore) => {
-    const highScore = await getHighScore();
-    if (newScore > highScore) {
-      await saveHighScore(newScore);
-    }
-  };
-  
+  const { best, recordWin, recordLoss } = useLevelProgress(1);
 
   const randomizeMole = () => {
     let randomMole;
@@ -94,6 +51,7 @@ export default function App() {
           setIsGameLost(true);
           setIsGameActive(false);
           setLives(initialLives);
+          recordLoss(score);
           setScore(0);
         }
         randomizeMole();
@@ -124,17 +82,22 @@ export default function App() {
     setGameReset((prevState) => !prevState); // Toggle to trigger useEffect
     setLives(initialLives); // Reset lives on game reset
     setIsVisible(true);
+    setIsGameLost(false);
+    setIsGameWon(false);
+    setMoleHit(false);
   };
 
   useEffect(() => {
     if (lives <= 0) {
       setIsGameLost(true);
       setIsGameActive(false);
+      recordLoss(score);
     }
   }, [lives]);
 
   useEffect(() => {
     if (score >= 10) {
+      recordWin(score, lives);
       setIsGameWon(true);
       setIsGameActive(false);
     }
@@ -142,8 +105,8 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <View style= {styles.highScore}>
-        <Text>High Score: {'\n'}{highScore}</Text>
+      <View style={styles.highScore}>
+        <Text>Best: {'\n'}{best}</Text>
       </View>
       <View style={pauseSS.pauseButton}>
         <TouchableOpacity onPress={handlePauseGame}>
@@ -213,9 +176,9 @@ export default function App() {
         <View style={pauseSS.pauseScreen}>
           <View style={pauseSS.pauseContainer}>
             <Text style={pauseSS.pausedGameText}>You lost level 1{'\n'} you suck</Text>
-            <Link href="/level_2" style={pauseSS.pauseButtons}>
-              <Text style={pauseSS.pauseText}>Next Level</Text>
-            </Link>
+            <Pressable style={pauseSS.pauseButtons} onPress={handleResetGame}>
+              <Text style={pauseSS.pauseText}>Retry</Text>
+            </Pressable>
             <Link href="/" style={pauseSS.pauseButtons}>
               <Text style={pauseSS.pauseText}>Home</Text>
             </Link>
