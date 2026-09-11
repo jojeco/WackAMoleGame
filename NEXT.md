@@ -25,6 +25,3 @@
 4. No haptics/sound/animation/combo system yet (explicitly out of scope for
    this run) — could be a nice follow-up once the core progression loop has
    been played with for a bit.
-
-5. `styles/page-styles.js` still has a typo (`scoreContainer.position:
-   "abosolute"`), left untouched since that file was read-only for this run.

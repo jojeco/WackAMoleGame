@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   scoreContainer: {
-    position: "abosolute",
+    position: "absolute",
     fontSize: 40,
     bottom: 220,
   },
