@@ -68,6 +68,14 @@ export default function ProgressScreen() {
             <Text style={progressStyles.totalStatValue}>{totals.losses}</Text>
             <Text style={progressStyles.totalStatLabel}>Losses</Text>
           </View>
+          <View style={progressStyles.totalStat}>
+            <Text style={progressStyles.totalStatValue}>{totals.bestStreak}</Text>
+            <Text style={progressStyles.totalStatLabel}>Best Streak</Text>
+          </View>
+          <View style={progressStyles.totalStat}>
+            <Text style={progressStyles.totalStatValue}>{totals.comboPoints}</Text>
+            <Text style={progressStyles.totalStatLabel}>Combo Pts</Text>
+          </View>
         </View>
       </View>
 
@@ -81,6 +89,7 @@ export default function ProgressScreen() {
           <Text style={[progressStyles.tableCell, progressStyles.tableHeaderText]}>Wins</Text>
           <Text style={[progressStyles.tableCell, progressStyles.tableHeaderText]}>Losses</Text>
           <Text style={[progressStyles.tableCell, progressStyles.tableHeaderText]}>Plays</Text>
+          <Text style={[progressStyles.tableCell, progressStyles.tableHeaderText]}>Streak</Text>
         </View>
         {LEVELS.map((level) => {
           const entry = progress.levels[String(level.id)] || {
@@ -89,6 +98,7 @@ export default function ProgressScreen() {
             wins: 0,
             losses: 0,
             plays: 0,
+            bestStreak: 0,
           };
           return (
             <View key={level.id} style={progressStyles.tableRow}>
@@ -98,6 +108,7 @@ export default function ProgressScreen() {
               <Text style={progressStyles.tableCell}>{entry.wins}</Text>
               <Text style={progressStyles.tableCell}>{entry.losses}</Text>
               <Text style={progressStyles.tableCell}>{entry.plays}</Text>
+              <Text style={progressStyles.tableCell}>{entry.bestStreak}</Text>
             </View>
           );
         })}

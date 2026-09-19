@@ -6,14 +6,13 @@
    tripping the playbook's pause-and-ask-Jordan rewrite threshold. Ask Jordan
    before doing it.
 
-2. The `lives <= 1` branch inside each level's mole timer effect and the
-   separate `lives <= 0` effect can both fire a loss for the same run
-   (that's why `recordLoss` is called from both places). It's harmless today
-   because `recordResult` max-merges best/stars and unlock gating only
-   checks `wins > 0`, but it does mean the lifetime `losses`/`plays` counters
-   on the Progress screen can occasionally be inflated by one for a single
-   real loss. Worth a proper de-dupe (e.g. a `hasRecordedResult` ref per
-   run) if the exact stat counts start to matter.
+2. ~~`recordLoss` double-fire~~ Addressed: the `lives <= 0` effect is now
+   guarded with `!isGameLost`, so a single run is no longer recorded as a loss
+   twice (the timer branch's `lives <= 1` path still records it once). Note the
+   pre-existing timer/lives-effect overlap is otherwise unchanged, and saves
+   written before this fix keep their inflated `plays`/`losses` counts — there
+   is no migration, so the Progress screen will show old inflated totals with
+   correct increments accumulating on top.
 
 3. Pre-existing gameplay bug, left alone this run because it changes
    difficulty: in the mole timer effect only the life *decrement* is guarded
@@ -22,6 +21,16 @@
    if you did hit that mole. Fixing it means moving the game-over check
    inside the `!moleHit` branch (or checking the post-decrement value).
 
-4. No haptics/sound/animation/combo system yet (explicitly out of scope for
-   this run) — could be a nice follow-up once the core progression loop has
-   been played with for a bit.
+4. ~~Combo system~~ Landed this run (see README and `lib/combo.js`).
+
+5. `randomizeMole()` on levels 2-10 can re-pick the cell that is already
+   active, so the effect does not restart and a stale timer can cost a life
+   (and break a combo) right after a successful hit. Fix alongside the
+   `lives <= 1` difficulty change in item 3.
+
+6. Combo landed without haptics/audio. `expo-haptics` and `expo-av` are
+   Expo-bundled and free; next increment could fire a light impact on tier-up
+   and a whiff sound on combo break.
+
+7. Combo points are persisted but unused. Candidate: a combo-based star
+   criterion or a per-level best-combo board.

@@ -8,6 +8,7 @@ import { loadProgress, recordResult } from "../lib/progress";
 export function useLevelProgress(levelId) {
   const [best, setBest] = useState(0);
   const [stars, setStars] = useState(0);
+  const [bestStreak, setBestStreak] = useState(0);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -19,6 +20,7 @@ export function useLevelProgress(levelId) {
       const entry = progress.levels[String(levelId)];
       setBest(entry ? entry.best : 0);
       setStars(entry ? entry.stars : 0);
+      setBestStreak(entry ? entry.bestStreak : 0);
       setLoading(false);
     })();
 
@@ -28,28 +30,36 @@ export function useLevelProgress(levelId) {
   }, [levelId]);
 
   const applyResult = useCallback(
-    async (score, livesLeft, won) => {
-      const progress = await recordResult({ levelId, score, livesLeft, won });
+    async (score, livesLeft, won, combo = {}) => {
+      const progress = await recordResult({
+        levelId,
+        score,
+        livesLeft,
+        won,
+        bestStreak: combo.bestStreak,
+        comboPoints: combo.comboPoints,
+      });
       const entry = progress.levels[String(levelId)];
       if (entry) {
         setBest((prevBest) => Math.max(prevBest, entry.best));
         setStars((prevStars) => Math.max(prevStars, entry.stars));
+        setBestStreak((prevStreak) => Math.max(prevStreak, entry.bestStreak));
       }
     },
     [levelId]
   );
 
   const recordWin = useCallback(
-    (score, livesLeft) => applyResult(score, livesLeft, true),
+    (score, livesLeft, combo = {}) => applyResult(score, livesLeft, true, combo),
     [applyResult]
   );
 
   const recordLoss = useCallback(
-    (score) => applyResult(score, 0, false),
+    (score, combo = {}) => applyResult(score, 0, false, combo),
     [applyResult]
   );
 
-  return { best, stars, loading, recordWin, recordLoss };
+  return { best, stars, bestStreak, loading, recordWin, recordLoss };
 }
 
 export default useLevelProgress;

@@ -6,6 +6,8 @@ import pauseSS from "../styles/pauseStyle";
 import { Link } from "expo-router";
 import pauseImage from "../assets/images/buttonPause.png";
 import { useLevelProgress } from "../hooks/useLevelProgress";
+import { useCombo } from "../hooks/useCombo";
+import ComboMeter from "../components/ComboMeter";
 
 export default function App() {
   const [activeMole, setActiveMole] = useState(null); // State for the active mole
@@ -20,6 +22,7 @@ export default function App() {
   const [isVisible, setIsVisible] = useState(true);
   const [isGameLost, setIsGameLost] = useState(false);
   const { best, recordWin, recordLoss } = useLevelProgress(10);
+  const combo = useCombo();
 
   const randomizeMole = () => {
     const randomMole = Math.floor(Math.random() * 25);
@@ -30,6 +33,7 @@ export default function App() {
     setIsVisible(false); // Hide the Pressable
   };
   const handleMoleHit = () => {
+    combo.registerHit();
     setScore(score + 1);
     // Indicate the mole was hit
     randomizeMole();
@@ -40,13 +44,17 @@ export default function App() {
       const moleTimer = setTimeout(() => {
         if (!moleHit) {
           setLives((prevLives) => prevLives - 1);
+          combo.registerMiss();
         }
 
         if (lives <= 1) {
           setIsGameLost(true);
           setIsGameActive(false);
           setLives(initialLives);
-          recordLoss(score);
+          // Snapshot before resetting so the run's combo stats are recorded.
+          const c = combo.getSnapshot();
+          recordLoss(score, c);
+          combo.resetCombo();
           setScore(0);
         }
         randomizeMole();
@@ -80,18 +88,23 @@ export default function App() {
     setIsGameLost(false);
     setIsGameWon(false);
     setMoleHit(false);
+    combo.resetCombo();
   };
   useEffect(() => {
-    if (lives <= 0) {
+    if (lives <= 0 && !isGameLost) {
       setIsGameLost(true);
       setIsGameActive(false);
-      recordLoss(score);
+      const c = combo.getSnapshot();
+      recordLoss(score, c);
+      combo.resetCombo();
     }
   }, [lives]);
 
   useEffect(() => {
     if (score >= 100) {
-      recordWin(score, lives);
+      const c = combo.getSnapshot();
+      recordWin(score, lives, c);
+      combo.resetCombo();
       setIsGameWon(true);
       setIsGameActive(false);
     }
@@ -123,6 +136,11 @@ export default function App() {
           </View>
         ))}
       </View>
+      <ComboMeter
+        streak={combo.streak}
+        multiplier={combo.multiplier}
+        tierLabel={combo.tierLabel}
+      />
       {isVisible && (
         <Pressable
           style={styles.buttonStyles}
