@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { loadProgress, recordResult } from "../lib/progress";
+import { unlockAchievements } from "../lib/achievements";
 
 // Per-level progress hook: loads the saved best/stars for `levelId` on
 // mount, and exposes recordWin/recordLoss which persist a result and
@@ -10,6 +11,7 @@ export function useLevelProgress(levelId) {
   const [stars, setStars] = useState(0);
   const [bestStreak, setBestStreak] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [newAchievements, setNewAchievements] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -45,6 +47,23 @@ export function useLevelProgress(levelId) {
         setStars((prevStars) => Math.max(prevStars, entry.stars));
         setBestStreak((prevStreak) => Math.max(prevStreak, entry.bestStreak));
       }
+
+      // Evaluate badges against the run that was just recorded. Runs after
+      // the optimistic state updates above so those aren't delayed by a
+      // second AsyncStorage round trip. Level screens don't consume
+      // newAchievements yet (see NEXT.md); it's exposed for a future pop-up.
+      const runInfo = {
+        levelId,
+        score,
+        livesLeft,
+        won,
+        bestStreak: combo.bestStreak,
+        comboPoints: combo.comboPoints,
+      };
+      const { newlyUnlocked } = await unlockAchievements(progress, runInfo);
+      if (newlyUnlocked.length > 0) {
+        setNewAchievements((prev) => [...prev, ...newlyUnlocked]);
+      }
     },
     [levelId]
   );
@@ -59,7 +78,7 @@ export function useLevelProgress(levelId) {
     [applyResult]
   );
 
-  return { best, stars, bestStreak, loading, recordWin, recordLoss };
+  return { best, stars, bestStreak, loading, recordWin, recordLoss, newAchievements };
 }
 
 export default useLevelProgress;

@@ -62,6 +62,34 @@ const progressStyles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 16,
   },
+  achievementsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  achievementsLinkButton: {
+    backgroundColor: "grey",
+    borderRadius: 30,
+    paddingVertical: 10,
+    paddingHorizontal: 24,
+  },
+  achievementsLinkText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  achievementsBadge: {
+    marginLeft: 8,
+    backgroundColor: "#c0392b",
+    borderRadius: 12,
+    paddingVertical: 3,
+    paddingHorizontal: 10,
+  },
+  achievementsBadgeText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 12,
+  },
   levelGrid: {
     width: "90%",
     flexDirection: "row",

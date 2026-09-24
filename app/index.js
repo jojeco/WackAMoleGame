@@ -5,6 +5,12 @@ import indexStyles from "../styles/index-styles";
 import progressStyles from "../styles/progress-styles";
 import { LEVELS } from "../lib/levels";
 import { loadProgress, isUnlocked, defaultProgress } from "../lib/progress";
+import {
+  ACHIEVEMENTS,
+  unlockAchievements,
+  unseenCount,
+  defaultAchievementsState,
+} from "../lib/achievements";
 
 function starGlyphs(stars) {
   return "*".repeat(stars) || "-";
@@ -12,15 +18,20 @@ function starGlyphs(stars) {
 
 export default function Page() {
   const [progress, setProgress] = useState(defaultProgress);
+  const [achievementsState, setAchievementsState] = useState(defaultAchievementsState);
 
   // Reload progress every time this screen gains focus so tiles reflect the
-  // result of whatever level the player just came back from.
+  // result of whatever level the player just came back from. Also runs the
+  // achievements backfill here so a returning player gets credit for
+  // milestones already sitting in their save, not just future runs.
   useFocusEffect(
     useCallback(() => {
       let isActive = true;
       (async () => {
         const loaded = await loadProgress();
         if (isActive) setProgress(loaded);
+        const { state } = await unlockAchievements(loaded, null);
+        if (isActive) setAchievementsState(state);
       })();
       return () => {
         isActive = false;
@@ -29,6 +40,8 @@ export default function Page() {
   );
 
   const totals = progress.totals;
+  const unlockedAchievements = ACHIEVEMENTS.filter((a) => achievementsState.unlocked[a.id]).length;
+  const unseenAchievements = unseenCount(achievementsState);
 
   return (
     <ScrollView contentContainerStyle={progressStyles.scrollContainer}>
@@ -62,6 +75,21 @@ export default function Page() {
             <Text style={progressStyles.progressLinkText}>View Progress</Text>
           </Pressable>
         </Link>
+
+        <View style={progressStyles.achievementsRow}>
+          <Link href="/achievements" asChild>
+            <Pressable style={progressStyles.achievementsLinkButton}>
+              <Text style={progressStyles.achievementsLinkText}>
+                Achievements ({unlockedAchievements}/{ACHIEVEMENTS.length})
+              </Text>
+            </Pressable>
+          </Link>
+          {unseenAchievements > 0 && (
+            <View style={progressStyles.achievementsBadge}>
+              <Text style={progressStyles.achievementsBadgeText}>{unseenAchievements} new</Text>
+            </View>
+          )}
+        </View>
       </View>
 
       <View style={progressStyles.levelGrid}>

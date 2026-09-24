@@ -33,4 +33,21 @@
    and a whiff sound on combo break.
 
 7. Combo points are persisted but unused. Candidate: a combo-based star
-   criterion or a per-level best-combo board.
+   criterion or a per-level best-combo board. **Partially addressed** this
+   run: `bestStreak`/`comboPoints` now back three achievements
+   (`on_fire`, `unstoppable`, `combo_500`) -- the star-criterion/best-combo-
+   board ideas themselves are still open.
+
+8. Achievements landed without an in-level pop-up. `useLevelProgress` already
+   exposes `newAchievements` (the newly-unlocked achievement objects from the
+   run that just completed) for exactly this purpose, but no level screen
+   consumes it yet. Deliberately deferred because wiring a toast/pop-up in
+   means touching all 10 near-identical `app/level_N.js` files, which is the
+   same out-of-scope territory as item 1's dedup.
+
+9. Saves written before the `recordLoss` double-fire fix (item 2, above) have
+   inflated `plays`/`losses` counts. That means the new `dedicated`
+   achievement (`totals.plays >= 25`) can unlock earlier than intended on old
+   saves that pre-date the fix -- there's no migration to correct historical
+   totals, so this is expected drift rather than a bug in the achievement
+   itself.

@@ -10,6 +10,7 @@ import {
   unlockAll,
   defaultProgress,
 } from "../lib/progress";
+import { resetAchievements } from "../lib/achievements";
 
 function starGlyphs(stars) {
   return "*".repeat(stars) || "-";
@@ -34,8 +35,14 @@ export default function ProgressScreen() {
   const handleReset = async () => {
     const fresh = await resetProgress();
     setProgress(fresh);
+    // Badges reset alongside progress so old timestamps/unlocks don't
+    // linger after a wipe.
+    await resetAchievements();
   };
 
+  // Deliberately does NOT touch achievements: this is the escape hatch that
+  // sets wins=1 on levels 1-9 without awarding stars, and achievement
+  // checks are stars-based specifically so this button can't farm badges.
   const handleUnlockAll = async () => {
     const next = await unlockAll();
     setProgress(next);
