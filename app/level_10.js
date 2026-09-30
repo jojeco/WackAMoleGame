@@ -25,7 +25,10 @@ export default function App() {
   const combo = useCombo();
 
   const randomizeMole = () => {
-    const randomMole = Math.floor(Math.random() * 25);
+    let randomMole;
+    do {
+      randomMole = Math.floor(Math.random() * 25);
+    } while (randomMole === activeMole);
     setActiveMole(randomMole);
     setMoleHit(false); // Reset mole hit state
   };

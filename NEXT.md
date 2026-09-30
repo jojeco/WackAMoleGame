@@ -19,14 +19,16 @@
    by `if (!moleHit)`, while the `if (lives <= 1)` game-over check is not. So
    once you are down to your last life the next timer tick ends the run even
    if you did hit that mole. Fixing it means moving the game-over check
-   inside the `!moleHit` branch (or checking the post-decrement value).
+   inside the `!moleHit` branch (or checking the post-decrement value). Note:
+   practical impact is now minimal since item 5's fix means re-picks (and the
+   stale-timer misfire that could trigger this) can no longer happen.
 
 4. ~~Combo system~~ Landed this run (see README and `lib/combo.js`).
 
-5. `randomizeMole()` on levels 2-10 can re-pick the cell that is already
-   active, so the effect does not restart and a stale timer can cost a life
-   (and break a combo) right after a successful hit. Fix alongside the
-   `lives <= 1` difficulty change in item 3.
+5. ~~`randomizeMole()` on levels 2-10 can re-pick the cell that is already
+   active~~ Fixed this run: levels 2-10 now use the same do/while re-roll
+   pattern `level_1.js` already used, so `randomMole` can never equal
+   `activeMole` and the stale-timer misfire can no longer happen.
 
 6. Combo landed without haptics/audio. `expo-haptics` and `expo-av` are
    Expo-bundled and free; next increment could fire a light impact on tier-up
