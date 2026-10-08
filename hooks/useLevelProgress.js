@@ -50,8 +50,9 @@ export function useLevelProgress(levelId) {
 
       // Evaluate badges against the run that was just recorded. Runs after
       // the optimistic state updates above so those aren't delayed by a
-      // second AsyncStorage round trip. Level screens don't consume
-      // newAchievements yet (see NEXT.md); it's exposed for a future pop-up.
+      // second AsyncStorage round trip. Level screens render
+      // AchievementToast against newAchievements/dismissAchievement to pop
+      // these up one at a time (see NEXT.md).
       const runInfo = {
         levelId,
         score,
@@ -78,7 +79,21 @@ export function useLevelProgress(levelId) {
     [applyResult]
   );
 
-  return { best, stars, bestStreak, loading, recordWin, recordLoss, newAchievements };
+  const dismissAchievement = useCallback(
+    (id) => setNewAchievements((prev) => prev.filter((a) => a.id !== id)),
+    []
+  );
+
+  return {
+    best,
+    stars,
+    bestStreak,
+    loading,
+    recordWin,
+    recordLoss,
+    newAchievements,
+    dismissAchievement,
+  };
 }
 
 export default useLevelProgress;

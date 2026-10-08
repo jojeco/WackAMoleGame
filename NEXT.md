@@ -14,14 +14,17 @@
    is no migration, so the Progress screen will show old inflated totals with
    correct increments accumulating on top.
 
-3. Pre-existing gameplay bug, left alone this run because it changes
-   difficulty: in the mole timer effect only the life *decrement* is guarded
-   by `if (!moleHit)`, while the `if (lives <= 1)` game-over check is not. So
-   once you are down to your last life the next timer tick ends the run even
-   if you did hit that mole. Fixing it means moving the game-over check
-   inside the `!moleHit` branch (or checking the post-decrement value). Note:
-   practical impact is now minimal since item 5's fix means re-picks (and the
-   stale-timer misfire that could trigger this) can no longer happen.
+3. ~~Pre-existing gameplay bug~~ Reframed, not a live bug: the mole timer
+   effect's `if (lives <= 1)` game-over check isn't actually reachable on a
+   hit. `handleMoleHit` never sets `moleHit` to `true` -- a hit calls
+   `randomizeMole()`, which re-randomizes `activeMole` and resets `moleHit`
+   to `false`, and that `activeMole` change clears/restarts the pending
+   timer via its `useEffect` cleanup before it can fire. So the `lives <= 1`
+   check inside the timer only ever runs on a real miss, never on a hit.
+   What's left is a cleanup note: `moleHit` is effectively dead state outside
+   of the Start-press guard (`setMoleHit(true)` in the Start `Pressable`) and
+   could be removed in a future pass, but there's no gameplay bug to fix
+   here.
 
 4. ~~Combo system~~ Landed this run (see README and `lib/combo.js`).
 
@@ -40,12 +43,12 @@
    (`on_fire`, `unstoppable`, `combo_500`) -- the star-criterion/best-combo-
    board ideas themselves are still open.
 
-8. Achievements landed without an in-level pop-up. `useLevelProgress` already
-   exposes `newAchievements` (the newly-unlocked achievement objects from the
-   run that just completed) for exactly this purpose, but no level screen
-   consumes it yet. Deliberately deferred because wiring a toast/pop-up in
-   means touching all 10 near-identical `app/level_N.js` files, which is the
-   same out-of-scope territory as item 1's dedup.
+8. ~~Achievements landed without an in-level pop-up~~ Landed this run: a new
+   `components/AchievementToast.js` (styled via `styles/toast-styles.js`)
+   reads `newAchievements` and shows one unlock at a time, dismissing on a
+   ~2.5s timer or a tap via the hook's new `dismissAchievement`. Wired into
+   all 10 `app/level_N.js` files as the last child of the container so it
+   draws above the pause/win/loss overlays.
 
 9. Saves written before the `recordLoss` double-fire fix (item 2, above) have
    inflated `plays`/`losses` counts. That means the new `dedicated`

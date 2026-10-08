@@ -8,6 +8,7 @@ import pauseImage from "../assets/images/buttonPause.png";
 import { useLevelProgress } from "../hooks/useLevelProgress";
 import { useCombo } from "../hooks/useCombo";
 import ComboMeter from "../components/ComboMeter";
+import AchievementToast from "../components/AchievementToast";
 
 export default function App() {
   const [activeMole, setActiveMole] = useState(null); // State for the active mole
@@ -21,7 +22,7 @@ export default function App() {
   const [isGameWon, setIsGameWon] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [isGameLost, setIsGameLost] = useState(false);
-  const { best, recordWin, recordLoss } = useLevelProgress(3);
+  const { best, recordWin, recordLoss, newAchievements, dismissAchievement } = useLevelProgress(3);
   const combo = useCombo();
 
   const randomizeMole = () => {
@@ -202,6 +203,7 @@ export default function App() {
           </View>
         </View>
       )}
+      <AchievementToast achievements={newAchievements} onDismiss={dismissAchievement} />
     </View>
   );
 }
