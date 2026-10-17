@@ -76,6 +76,12 @@ export default function Page() {
           </Pressable>
         </Link>
 
+        <Link href="/howToPlay" asChild>
+          <Pressable style={progressStyles.progressLinkButton}>
+            <Text style={progressStyles.progressLinkText}>How to Play</Text>
+          </Pressable>
+        </Link>
+
         <View style={progressStyles.achievementsRow}>
           <Link href="/achievements" asChild>
             <Pressable style={progressStyles.achievementsLinkButton}>

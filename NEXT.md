@@ -56,3 +56,19 @@
    saves that pre-date the fix -- there's no migration to correct historical
    totals, so this is expected drift rather than a bug in the achievement
    itself.
+
+10. `app/howToPlay.js` is now a real screen (this run) -- landed via the
+    home screen's new "How to Play" link. Good next increments from here:
+    - `components/Mole.js` looks like dead code: it imports from
+      `'../Styles/MoleStyle'` (capital `Styles`) but the real folder is
+      lowercase `styles/`, so the import is case-mismatched on
+      case-sensitive filesystems. Worth confirming nothing actually renders
+      it before removing.
+    - `components/score.js` is fully commented out -- another removal
+      candidate.
+    - Both of the above are *removals*, not additions, so they may trip the
+      playbook's pause-and-ask-Jordan threshold for deleting files; flag
+      that before acting on them rather than just deleting in a future run.
+    - The "How to Play" screen is currently static prose; a future pass
+      could link to it from the pause/loss overlays too, not just the home
+      screen.
