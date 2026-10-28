@@ -41,7 +41,11 @@
    criterion or a per-level best-combo board. **Partially addressed** this
    run: `bestStreak`/`comboPoints` now back three achievements
    (`on_fire`, `unstoppable`, `combo_500`) -- the star-criterion/best-combo-
-   board ideas themselves are still open.
+   board ideas themselves are still open. **Further addressed** in a later
+   run: the new win/loss `RunSummary` card (see item 11) now surfaces this
+   run's `bestStreak`/`comboPoints` directly on the overlay, so the numbers
+   are no longer purely invisible persisted state -- but the star-criterion
+   and best-combo-board ideas themselves are still unimplemented.
 
 8. ~~Achievements landed without an in-level pop-up~~ Landed this run: a new
    `components/AchievementToast.js` (styled via `styles/toast-styles.js`)
@@ -71,4 +75,32 @@
       that before acting on them rather than just deleting in a future run.
     - The "How to Play" screen is currently static prose; a future pass
       could link to it from the pause/loss overlays too, not just the home
-      screen.
+      screen. (Note: those overlays just grew a `RunSummary` card -- item 11
+      below -- so weigh overlay crowding before adding another link there.)
+
+11. **Run-results card on the win/loss overlays.** Added
+    `components/RunSummary.js` + `styles/run-summary-styles.js`, and a new
+    `lastRun` state in `hooks/useLevelProgress.js` (set at the start of
+    `applyResult` and populated once `recordResult` resolves, using a
+    `bestRef` ref to avoid reading stale `best` state). Wired into all 10
+    `app/level_N.js` win/loss overlays, just under the title text. Shows
+    this run's score, stars (or "No stars" on a loss), a "New best!" line
+    when applicable, and the run's `bestStreak`/`comboPoints`.
+    `styles/pauseStyle.js`'s `pauseContainer` changed from a fixed
+    `height: "40%"` to `minHeight: "40%"` plus a touch of vertical padding
+    so the taller win/loss overlays don't clip the new card; the plain
+    pause overlay (which doesn't render `RunSummary`) is unaffected since
+    its content didn't grow.
+
+12. Good next increments from here:
+    - A light haptic/chime specifically on the win overlay appearing (via
+      `expo-haptics`/`expo-av`, see item 6) would pair well with the new
+      `RunSummary` card landing in the same moment.
+    - `RunSummary` only shows *this run's* combo stats. It could also show
+      the level's lifetime `bestComboPoints`/`bestStreak` side by side, or
+      link out to the Progress screen -- a small step toward the still-open
+      star-criterion/best-combo-board idea in item 7.
+    - `components/Mole.js`'s case-mismatched import and `components/score.js`'s
+      fully-commented-out body (both flagged in item 10) are still open and
+      still look like removal candidates -- still flagged as needing
+      Jordan's go-ahead before deleting anything, not re-decided here.

@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { loadProgress, recordResult } from "../lib/progress";
 import { unlockAchievements } from "../lib/achievements";
+import { starsFor, getLevel } from "../lib/levels";
 
 // Per-level progress hook: loads the saved best/stars for `levelId` on
 // mount, and exposes recordWin/recordLoss which persist a result and
@@ -12,6 +13,12 @@ export function useLevelProgress(levelId) {
   const [bestStreak, setBestStreak] = useState(0);
   const [loading, setLoading] = useState(true);
   const [newAchievements, setNewAchievements] = useState([]);
+  const [lastRun, setLastRun] = useState(null);
+  // applyResult only depends on [levelId] (see below), so reading the
+  // `best` state value directly inside it would be stale -- this ref is
+  // kept in sync wherever `best` is set (on load, and in applyResult) so
+  // applyResult can read the up-to-date value synchronously.
+  const bestRef = useRef(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -20,7 +27,9 @@ export function useLevelProgress(levelId) {
       const progress = await loadProgress();
       if (!isMounted) return;
       const entry = progress.levels[String(levelId)];
-      setBest(entry ? entry.best : 0);
+      const loadedBest = entry ? entry.best : 0;
+      setBest(loadedBest);
+      bestRef.current = loadedBest;
       setStars(entry ? entry.stars : 0);
       setBestStreak(entry ? entry.bestStreak : 0);
       setLoading(false);
@@ -33,6 +42,9 @@ export function useLevelProgress(levelId) {
 
   const applyResult = useCallback(
     async (score, livesLeft, won, combo = {}) => {
+      setLastRun(null);
+      const prevBest = bestRef.current;
+
       const progress = await recordResult({
         levelId,
         score,
@@ -46,7 +58,17 @@ export function useLevelProgress(levelId) {
         setBest((prevBest) => Math.max(prevBest, entry.best));
         setStars((prevStars) => Math.max(prevStars, entry.stars));
         setBestStreak((prevStreak) => Math.max(prevStreak, entry.bestStreak));
+        bestRef.current = Math.max(bestRef.current, entry.best);
       }
+
+      setLastRun({
+        won,
+        score,
+        stars: starsFor(getLevel(levelId), score, livesLeft),
+        isNewBest: score > prevBest && score > 0,
+        bestStreak: combo.bestStreak || 0,
+        comboPoints: combo.comboPoints || 0,
+      });
 
       // Evaluate badges against the run that was just recorded. Runs after
       // the optimistic state updates above so those aren't delayed by a
@@ -93,6 +115,7 @@ export function useLevelProgress(levelId) {
     recordLoss,
     newAchievements,
     dismissAchievement,
+    lastRun,
   };
 }
 

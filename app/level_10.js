@@ -9,6 +9,7 @@ import { useLevelProgress } from "../hooks/useLevelProgress";
 import { useCombo } from "../hooks/useCombo";
 import ComboMeter from "../components/ComboMeter";
 import AchievementToast from "../components/AchievementToast";
+import RunSummary from "../components/RunSummary";
 
 export default function App() {
   const [activeMole, setActiveMole] = useState(null); // State for the active mole
@@ -22,7 +23,7 @@ export default function App() {
   const [isGameWon, setIsGameWon] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [isGameLost, setIsGameLost] = useState(false);
-  const { best, recordWin, recordLoss, newAchievements, dismissAchievement } = useLevelProgress(10);
+  const { best, lastRun, recordWin, recordLoss, newAchievements, dismissAchievement } = useLevelProgress(10);
   const combo = useCombo();
 
   const randomizeMole = () => {
@@ -179,6 +180,7 @@ export default function App() {
         <View style={pauseSS.pauseScreen}>
           <View style={pauseSS.pauseContainer}>
             <Text style={pauseSS.pausedGameText}>You Won!{'\n'}You beat the game!</Text>
+            <RunSummary run={lastRun} />
             <Link href="/" style={pauseSS.pauseButtons}>
               <Text style={pauseSS.pauseText}>Home</Text>
             </Link>
@@ -191,6 +193,7 @@ export default function App() {
             <Text style={pauseSS.pausedGameText}>
               You lost:{"("} {"\n"} skill issue{" "}
             </Text>
+            <RunSummary run={lastRun} />
             <Pressable style={pauseSS.pauseButtons} onPress={handleResetGame}>
               <Text style={pauseSS.pauseText}>Retry</Text>
             </Pressable>

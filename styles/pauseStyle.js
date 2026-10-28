@@ -22,8 +22,9 @@ const pauseSS = StyleSheet.create({
     
   },
   pauseContainer: {
-    height: "40%",
+    minHeight: "40%",
     width: "70%",
+    paddingVertical: 16,
     backgroundColor: "rgba(173, 216, 230, 0.8)",
     alignContent: "center",
     justifyContent: "center",
