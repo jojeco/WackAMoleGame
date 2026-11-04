@@ -96,10 +96,14 @@
     - A light haptic/chime specifically on the win overlay appearing (via
       `expo-haptics`/`expo-av`, see item 6) would pair well with the new
       `RunSummary` card landing in the same moment.
-    - `RunSummary` only shows *this run's* combo stats. It could also show
-      the level's lifetime `bestComboPoints`/`bestStreak` side by side, or
-      link out to the Progress screen -- a small step toward the still-open
-      star-criterion/best-combo-board idea in item 7.
+    - ~~`RunSummary` only shows *this run's* combo stats. It could also show
+      the level's lifetime `bestComboPoints`/`bestStreak` side by side~~
+      Addressed this run: `RunSummary` now has a "Level best: streak X ·
+      combo Y" line sourced from `useLevelProgress`'s `lastRun.levelBestStreak`
+      /`lastRun.levelBestComboPoints`, plus "New best streak!"/"New combo
+      record!" lines when this run strictly beat the prior per-level best.
+      Linking out to the Progress screen, and the star-criterion/best-combo-
+      board ideas themselves, are still open (item 7).
     - `components/Mole.js`'s case-mismatched import and `components/score.js`'s
       fully-commented-out body (both flagged in item 10) are still open and
       still look like removal candidates -- still flagged as needing

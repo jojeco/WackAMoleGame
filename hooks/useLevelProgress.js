@@ -19,6 +19,11 @@ export function useLevelProgress(levelId) {
   // kept in sync wherever `best` is set (on load, and in applyResult) so
   // applyResult can read the up-to-date value synchronously.
   const bestRef = useRef(0);
+  // Same pattern as bestRef, for the level's lifetime best streak/combo
+  // points -- used to detect a "new best" on this run without waiting on
+  // (possibly stale) React state.
+  const bestStreakRef = useRef(0);
+  const bestComboPointsRef = useRef(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -32,6 +37,8 @@ export function useLevelProgress(levelId) {
       bestRef.current = loadedBest;
       setStars(entry ? entry.stars : 0);
       setBestStreak(entry ? entry.bestStreak : 0);
+      bestStreakRef.current = entry ? entry.bestStreak : 0;
+      bestComboPointsRef.current = entry ? entry.bestComboPoints : 0;
       setLoading(false);
     })();
 
@@ -44,6 +51,8 @@ export function useLevelProgress(levelId) {
     async (score, livesLeft, won, combo = {}) => {
       setLastRun(null);
       const prevBest = bestRef.current;
+      const prevBestStreak = bestStreakRef.current;
+      const prevBestComboPoints = bestComboPointsRef.current;
 
       const progress = await recordResult({
         levelId,
@@ -59,15 +68,41 @@ export function useLevelProgress(levelId) {
         setStars((prevStars) => Math.max(prevStars, entry.stars));
         setBestStreak((prevStreak) => Math.max(prevStreak, entry.bestStreak));
         bestRef.current = Math.max(bestRef.current, entry.best);
+        bestStreakRef.current = Math.max(bestStreakRef.current, entry.bestStreak);
+        bestComboPointsRef.current = Math.max(
+          bestComboPointsRef.current,
+          entry.bestComboPoints
+        );
       }
+
+      const runStreak = combo.bestStreak || 0;
+      const runComboPoints = combo.comboPoints || 0;
 
       setLastRun({
         won,
         score,
         stars: starsFor(getLevel(levelId), score, livesLeft),
         isNewBest: score > prevBest && score > 0,
-        bestStreak: combo.bestStreak || 0,
-        comboPoints: combo.comboPoints || 0,
+        bestStreak: runStreak,
+        comboPoints: runComboPoints,
+        // Level's lifetime bests, read from the saved entry (post-merge) so
+        // they already reflect this run; if recordResult failed and returned
+        // no entry for this level (see recordResult's catch branch in
+        // lib/progress.js), fall back to max(previously loaded best, this
+        // run) so the card never under-reports the stored best.
+        levelBestStreak: entry
+          ? entry.bestStreak
+          : Math.max(prevBestStreak, runStreak),
+        levelBestComboPoints: entry
+          ? entry.bestComboPoints
+          : Math.max(prevBestComboPoints, runComboPoints),
+        // "New best" only once per run: prevBestStreak/prevBestComboPoints
+        // were snapshotted before this call updated the refs, so a second
+        // applyResult call for the same run (recordLoss double-fire guard
+        // aside, see NEXT.md item 2) compares against the now-updated refs
+        // and no longer reports a new best.
+        isNewBestStreak: runStreak > prevBestStreak && runStreak > 0,
+        isNewBestCombo: runComboPoints > prevBestComboPoints && runComboPoints > 0,
       });
 
       // Evaluate badges against the run that was just recorded. Runs after

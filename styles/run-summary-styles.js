@@ -39,6 +39,15 @@ const runSummaryStyles = StyleSheet.create({
     marginTop: 4,
     textAlign: "center",
   },
+  // Lifetime per-level best, shown right under comboText's this-run stats.
+  // Same small/dark-text treatment, just a hair closer to the line above
+  // since the two are meant to read as a pair.
+  levelBestText: {
+    fontSize: 12,
+    color: "#1c1c2e",
+    marginTop: 2,
+    textAlign: "center",
+  },
 });
 
 export default runSummaryStyles;

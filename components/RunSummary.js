@@ -12,7 +12,10 @@ function starGlyphs(stars) {
 // Small run-results card rendered on the win/loss overlays (app/level_N.js)
 // just under the "You Won!"/loss title. Shows how *this* run went: score,
 // stars (or "No stars" on a loss), whether it's a new best, and the combo
-// stats carried over from useLevelProgress's `lastRun`.
+// stats carried over from useLevelProgress's `lastRun` -- plus the level's
+// all-time best streak/combo for comparison, and whether this run just set
+// a new one. `?? 0` defaults keep this backward compatible with an older
+// `run` shape that predates those fields.
 export default function RunSummary({ run }) {
   if (!run) return null;
 
@@ -30,6 +33,16 @@ export default function RunSummary({ run }) {
       <Text style={runSummaryStyles.comboText}>
         Best streak {run.bestStreak} · Combo pts {run.comboPoints}
       </Text>
+      <Text style={runSummaryStyles.levelBestText}>
+        Level best: streak {run.levelBestStreak ?? 0} · combo{" "}
+        {run.levelBestComboPoints ?? 0}
+      </Text>
+      {run.isNewBestStreak && (
+        <Text style={runSummaryStyles.newBestText}>New best streak!</Text>
+      )}
+      {run.isNewBestCombo && (
+        <Text style={runSummaryStyles.newBestText}>New combo record!</Text>
+      )}
     </View>
   );
 }
