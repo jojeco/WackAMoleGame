@@ -46,6 +46,9 @@
    run's `bestStreak`/`comboPoints` directly on the overlay, so the numbers
    are no longer purely invisible persisted state -- but the star-criterion
    and best-combo-board ideas themselves are still unimplemented.
+   **Best-combo board landed** in a later run (see item 13): the Progress
+   screen table now has a "Combo" column showing each level's
+   `bestComboPoints`. The star-criterion idea is still open.
 
 8. ~~Achievements landed without an in-level pop-up~~ Landed this run: a new
    `components/AchievementToast.js` (styled via `styles/toast-styles.js`)
@@ -108,3 +111,16 @@
       fully-commented-out body (both flagged in item 10) are still open and
       still look like removal candidates -- still flagged as needing
       Jordan's go-ahead before deleting anything, not re-decided here.
+
+13. **Progress screen: tap-twice confirm + best-combo column + star total.**
+    "Reset Progress" and "Unlock All Levels" were single-tap, no-confirmation
+    destructive actions (the former wipes every level's save and all
+    achievements). Both now require a second tap on the same already-armed
+    button to actually run -- the first tap arms it (label changes to "Tap
+    again to...", button gets a darker `actionButtonArmed` style), a small
+    "Cancel" appears, and it auto-disarms after ~4s. Arming one button
+    disarms the other. Also added the "Combo" column (item 7's best-combo
+    board) and a "Stars: X / 30" line under "Lifetime Totals", computed from
+    `LEVELS.length * 3` rather than hardcoded. `app/progress.js` and
+    `styles/progress-styles.js` only; `lib/progress.js`'s storage format is
+    unchanged.

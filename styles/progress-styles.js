@@ -189,6 +189,11 @@ const progressStyles = StyleSheet.create({
   actionButtonDanger: {
     backgroundColor: "#a33",
   },
+  actionButtonArmed: {
+    backgroundColor: "#5a0000",
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
   actionButtonText: {
     color: "#fff",
     fontWeight: "bold",

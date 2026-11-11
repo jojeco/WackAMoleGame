@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { Link, useFocusEffect } from "expo-router";
 import indexStyles from "../styles/index-styles";
@@ -18,6 +18,16 @@ function starGlyphs(stars) {
 
 export default function ProgressScreen() {
   const [progress, setProgress] = useState(defaultProgress);
+  // null | "reset" | "unlock" - which destructive button is armed for a
+  // second confirming tap. A single value means arming one disarms the
+  // other automatically.
+  const [armed, setArmed] = useState(null);
+
+  useEffect(() => {
+    if (!armed) return;
+    const timer = setTimeout(() => setArmed(null), 4000);
+    return () => clearTimeout(timer);
+  }, [armed]);
 
   useFocusEffect(
     useCallback(() => {
@@ -48,7 +58,29 @@ export default function ProgressScreen() {
     setProgress(next);
   };
 
+  const onPressReset = () => {
+    if (armed === "reset") {
+      handleReset();
+      setArmed(null);
+    } else {
+      setArmed("reset");
+    }
+  };
+
+  const onPressUnlockAll = () => {
+    if (armed === "unlock") {
+      handleUnlockAll();
+      setArmed(null);
+    } else {
+      setArmed("unlock");
+    }
+  };
+
   const totals = progress.totals;
+  const totalStars = LEVELS.reduce(
+    (sum, l) => sum + ((progress.levels[String(l.id)] || {}).stars || 0),
+    0
+  );
 
   return (
     <ScrollView contentContainerStyle={progressStyles.scrollContainer}>
@@ -58,6 +90,9 @@ export default function ProgressScreen() {
 
       <View style={progressStyles.headerStrip}>
         <Text style={progressStyles.headerTitle}>Lifetime Totals</Text>
+        <Text style={progressStyles.headerSubtitle}>
+          Stars: {totalStars} / {LEVELS.length * 3}
+        </Text>
         <View style={progressStyles.totalsRow}>
           <View style={progressStyles.totalStat}>
             <Text style={progressStyles.totalStatValue}>{totals.moles}</Text>
@@ -97,6 +132,7 @@ export default function ProgressScreen() {
           <Text style={[progressStyles.tableCell, progressStyles.tableHeaderText]}>Losses</Text>
           <Text style={[progressStyles.tableCell, progressStyles.tableHeaderText]}>Plays</Text>
           <Text style={[progressStyles.tableCell, progressStyles.tableHeaderText]}>Streak</Text>
+          <Text style={[progressStyles.tableCell, progressStyles.tableHeaderText]}>Combo</Text>
         </View>
         {LEVELS.map((level) => {
           const entry = progress.levels[String(level.id)] || {
@@ -106,6 +142,7 @@ export default function ProgressScreen() {
             losses: 0,
             plays: 0,
             bestStreak: 0,
+            bestComboPoints: 0,
           };
           return (
             <View key={level.id} style={progressStyles.tableRow}>
@@ -116,21 +153,42 @@ export default function ProgressScreen() {
               <Text style={progressStyles.tableCell}>{entry.losses}</Text>
               <Text style={progressStyles.tableCell}>{entry.plays}</Text>
               <Text style={progressStyles.tableCell}>{entry.bestStreak}</Text>
+              <Text style={progressStyles.tableCell}>{entry.bestComboPoints}</Text>
             </View>
           );
         })}
       </View>
 
       <Pressable
-        style={[progressStyles.actionButton, progressStyles.actionButtonDanger]}
-        onPress={handleReset}
+        style={[
+          progressStyles.actionButton,
+          progressStyles.actionButtonDanger,
+          armed === "reset" && progressStyles.actionButtonArmed,
+        ]}
+        onPress={onPressReset}
       >
-        <Text style={progressStyles.actionButtonText}>Reset Progress</Text>
+        <Text style={progressStyles.actionButtonText}>
+          {armed === "reset" ? "Tap again to erase ALL progress" : "Reset Progress"}
+        </Text>
       </Pressable>
 
-      <Pressable style={progressStyles.actionButton} onPress={handleUnlockAll}>
-        <Text style={progressStyles.actionButtonText}>Unlock All Levels</Text>
+      <Pressable
+        style={[
+          progressStyles.actionButton,
+          armed === "unlock" && progressStyles.actionButtonArmed,
+        ]}
+        onPress={onPressUnlockAll}
+      >
+        <Text style={progressStyles.actionButtonText}>
+          {armed === "unlock" ? "Tap again to unlock all levels" : "Unlock All Levels"}
+        </Text>
       </Pressable>
+
+      {armed && (
+        <Pressable style={progressStyles.actionButton} onPress={() => setArmed(null)}>
+          <Text style={progressStyles.actionButtonText}>Cancel</Text>
+        </Pressable>
+      )}
 
       <Link href="/" asChild>
         <Pressable style={progressStyles.homeLink}>
