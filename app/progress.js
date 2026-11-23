@@ -16,6 +16,8 @@ function starGlyphs(stars) {
   return "*".repeat(stars) || "-";
 }
 
+const ARM_TIMEOUT_MS = 4000; // how long a destructive button stays armed before auto-cancelling
+
 export default function ProgressScreen() {
   const [progress, setProgress] = useState(defaultProgress);
   // null | "reset" | "unlock" - which destructive button is armed for a
@@ -25,7 +27,7 @@ export default function ProgressScreen() {
 
   useEffect(() => {
     if (!armed) return;
-    const timer = setTimeout(() => setArmed(null), 4000);
+    const timer = setTimeout(() => setArmed(null), ARM_TIMEOUT_MS);
     return () => clearTimeout(timer);
   }, [armed]);
 

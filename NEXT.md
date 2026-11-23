@@ -1,5 +1,9 @@
 # Follow-ups
 
+0. The 4000ms confirm-arm timeout in `app/progress.js` is now a named
+   constant, `ARM_TIMEOUT_MS`, matching `components/AchievementToast.js`'s
+   `HOLD_MS` pattern.
+
 1. **Consider deduplicating the 10 near-identical `app/level_N.js` files into
    one parameterised `<LevelScreen>` component driven by `lib/levels.js`.**
    Deliberately NOT done this run because it would delete ~1,600 net lines,
